@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: flight-delay-backend
+    env_file:
+      - backend/.env
+    ports:
+      - "8000:8000"
+
+  frontend-react:
+    image: node:20-alpine
+    container_name: flight-delay-frontend-react
+    working_dir: /app
+    volumes:
+      - ./frontend-react:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    ports:
+      - "5173:5173"
+
